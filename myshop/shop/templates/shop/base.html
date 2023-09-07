@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Bulletproof {% endblock %}</title>
+    <link href="{% static "css/base.css" %}" rel="stylesheet">
+    <link href="{% static "css/account.css" %}" rel="stylesheet">
+</head>
+<body>
+    <div id="header">
+        <a href="/" class="logo">Bulletproof</a>
+    {% if request.user.is_authenticated %}
+      <ul class="menu">
+        <li {% if section == "dashboard" %}class="selected"{% endif %}>
+          <a href="{% url "dashboard" %}">My dashboard</a>
+        </li>
+       </ul>
+    {% endif %}
+    <span class="user">
+    {% if request.user.is_authenticated %}
+    Hello {{ request.user.first_name|default:request.user.username }},
+    <a href="{% url "logout" %}">Logout</a>
+    {% else %}
+    <a href="{% url "login" %}">Log-in</a>
+    {% endif %}
+    </span>
+
+      <div id="subheader">
+        <div class="cart">
+           {% with total_items=cart|length %}
+           {% if total_items > 0 %}
+           Your cart:
+           <a href="{% url "cart:cart_detail" %}">
+            {{ total_items }} item{{ total_items|pluralize }},
+            Ksh.{{ cart.get_total_price }}
+            </a>
+            {% elif not order %}
+              Your cart is empty.
+          {% endif %}
+      {% endwith %}
+        </div>
+      </div>
+    </div>
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+
+    </div>
+</body>
+</html>
